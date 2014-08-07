@@ -94,5 +94,5 @@ class Media():
     def to_json(self):
         json_structure = []
         for medium in self._media.values():
-            json_structure.append(medium.to_json())
+            json_structure.append(medium.return_dict())
         return json.dumps(json_structure)
