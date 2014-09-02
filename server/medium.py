@@ -17,18 +17,28 @@ class Medium():
                  genre = None,
                  length = 0,
                  description = None,
-                 size = 0):
+                 size = 0,
+                 medium_dict = None):
         '''
         Constructor
         '''
-        self.media_id = media_id
-        self.media_type = media_type
-        self.name = name
-        self.genre = genre
-        self.length = length
-        self.description = description
-        self.size = size
-    
+        if medium_dict:
+            self.media_id = medium_dict['media_id']
+            self.media_type = medium_dict['media_type']
+            self.name = medium_dict['name']
+            self.genre = medium_dict['genre']
+            self.length = medium_dict['length']
+            self.description = medium_dict['description']
+            self.size = medium_dict['size']
+        else:
+            self.media_id = media_id
+            self.media_type = media_type
+            self.name = name
+            self.genre = genre
+            self.length = length
+            self.description = description
+            self.size = size
+        
     def from_json(self, json_string):
         json_object = json.loads(json_string)
         self.media_id = json_object['media_id']
@@ -64,9 +74,15 @@ class Media():
     """
     Doc
     """
-    
-    def __init__(self):
+        
+    def __init__(self, mediumlist = None):
         self._media = {}
+        
+        if mediumlist:
+            print('Building new media from:')
+            print(mediumlist)
+            for medium in mediumlist:
+                self.addMedium(Medium(medium_dict=medium))
     
     def addMedium(self, medium):
         self._media[medium.media_id] = medium

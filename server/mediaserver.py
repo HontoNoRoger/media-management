@@ -8,10 +8,11 @@ import socket
 import logging
 import configparser
 import database
-from medium import Medium
+from medium import Medium, Media
 from Crypto.Util.RFC1751 import binary
 import os
 import shutil
+from os.path import sys
 
 logging.getLogger().setLevel(logging.DEBUG)
 
@@ -35,9 +36,15 @@ class MediaServer:
         """
         Returns a JSON formatted binary string with all available media.
         """
-        results = Medium(self.db.find_entries())
+        results = Media(self.db.find_entries())
         #return b"bli, bla, blubb"
-        return binary(results.to_json()) # must be binary encoded
+        if not results._media:
+            logging.debug("Answer is empty.")
+            return b'[]'
+        else:
+            response = results.to_json()
+            logging.debug("Answer is: " + response)
+            return response.encode() # must be binary encoded
 
 
     def run(self):
@@ -54,37 +61,6 @@ class MediaServer:
     def start_stream(self, media_id):
         pass
     
-    def save_medium(self, medium, file, extension):
-        """
-        Saves the given file with it's medium settings into the database
-        and on the file system.
-        
-        TODO: Automatically get file extension
-        """
-        
-        # Save media entry in database
-        medium.media_id = self.db.add_entry(medium.media_type, medium.name,
-                                            medium.genre, medium.length,
-                                            medium.description, medium.size)
-        
-        # Make sure the target path exists
-        if not os.path.isdir('data'): 
-            os.mkdir('data')
-        if not os.path.isdir('data/' + medium.media_type): 
-            os.mkdir('data/' + medium.media_type)
-        if not os.path.isdir('data/' + medium.media_type + '/' + medium.genre): 
-            os.mkdir('data/' + medium.media_type + '/' + medium.genre)
-            
-        #TODO: rename file after it's row ID and save it under
-        # data/type/genre/id.ext
-        #file_target = open('data/' + medium.media_type + '/' + medium.genre + '/'
-        #                  + str(medium.media_id) + '.' + extension, 'w')
-        shutil.copyfile(file, 'data/' + medium.media_type + '/' + medium.genre + '/'
-                           + str(medium.media_id) + '.' + extension)
-        #file_target.write(file.read())
-        #file_target.close()
-        
-        return medium.media_id
     
 if __name__ == '__main__':
     server = MediaServer()

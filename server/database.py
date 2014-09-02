@@ -93,11 +93,29 @@ class Database:
                 query += " AND "
         print(query)
         self._c.execute(query)
-        return self._c.fetchall()
-    
+        
+        media_list = []
+        for medium_tuple in self._c.fetchall():
+            media_list.append(self._tuple_to_dict(medium_tuple))
+        return media_list
+        
     def get_next_available_rowid(self):
         self._c.execute("SELECT * FROM SQLITE_SEQUENCE WHERE name='media'")
         return self._c.fetchone().seq + 1 
     
     def close(self):
         self._db.close()
+        
+    def _tuple_to_dict(self, medium_tuple):
+        '''
+        Converts a database tuple to a dictionary.
+        '''
+        medium_dict = {}
+        medium_dict['media_id'] = medium_tuple[0]
+        medium_dict['media_type'] = medium_tuple[1]
+        medium_dict['name'] = medium_tuple[2]
+        medium_dict['genre'] = medium_tuple[3]
+        medium_dict['length'] = medium_tuple[4]
+        medium_dict['description'] = medium_tuple[5]
+        medium_dict['size'] = medium_tuple[6]
+        return medium_dict
