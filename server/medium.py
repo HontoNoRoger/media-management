@@ -70,6 +70,7 @@ class Medium():
                           'size': self.size}
         return medium_dict
 
+# TODO: make it iterable
 class Media():
     """
     Doc
@@ -112,3 +113,8 @@ class Media():
         for medium in self._media.values():
             json_structure.append(medium.return_dict())
         return json.dumps(json_structure)
+    
+    def from_json(self, json_string):
+        for medium in json.loads(json_string):
+            self.addMedium(Medium(medium_dict=medium))
+        return self

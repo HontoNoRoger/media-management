@@ -16,10 +16,12 @@ class GUI(object):
     '''
 
 
-    def __init__(self):
+    def __init__(self, client):
         '''
         Constructor
         '''
+        
+        self._client = client
         
         # Main window
         root = tk.Tk()
@@ -31,6 +33,10 @@ class GUI(object):
         # Menu
         topmenu = tk.Menu(root, title='Menu')
         topmenu.add_cascade(label='Datei')
+        
+        listmenu = tk.Menu(topmenu)
+        topmenu.add_cascade(label='Liste', menu=listmenu)
+        listmenu.add_command(label='Aktualisieren', command=self.refresh_medialist)
         root.config(menu=topmenu)
         
         # Search bar
@@ -54,20 +60,20 @@ class GUI(object):
         xsb.grid(row=1, column=0, sticky='sew')
         
         # Media listing 
-        media_listing = ttk.Treeview(root, columns=['Name', 'Typ', 'Genre', 'Länge', 'Size'])
-        media_listing.heading('#0', text='#')
-        media_listing.heading('#1', text='Name')
-        media_listing.heading('#2', text='Typ')
-        media_listing.heading('#3', text='Genre')
-        media_listing.heading('#4', text='Länge')
-        media_listing.heading('#5', text='Size')
+        self._media_listing = ttk.Treeview(root, columns=['Name', 'Typ', 'Genre', 'Länge', 'Size'])
+        self._media_listing.heading('#0', text='#')
+        self._media_listing.heading('#1', text='Name')
+        self._media_listing.heading('#2', text='Typ')
+        self._media_listing.heading('#3', text='Genre')
+        self._media_listing.heading('#4', text='Länge')
+        self._media_listing.heading('#5', text='Size')
         vsb = ttk.Scrollbar(orient="vertical",
-            command=media_listing.yview)
+            command=self._media_listing.yview)
         hsb = ttk.Scrollbar(orient="horizontal",
             command=self.tree.xview)
         self.tree.configure(yscrollcommand=vsb.set,
             xscrollcommand=hsb.set)
-        media_listing.grid(row=1, column=1, columnspan=11, sticky='ne')
+        self._media_listing.grid(row=1, column=1, columnspan=11, sticky='ne')
         
         # Thumbnail
         image = Image.open("files/noimage.jpeg")
@@ -105,6 +111,12 @@ class GUI(object):
             oid = self.tree.insert(parent, 'end', text=p, open=False)
             if isdir:
                 self.process_directory(oid, abspath)
+                
+    def refresh_medialist(self):
+        self._client.refresh_server_media()
+        for medium in self._client.get_server_media():
+            self._media_listing.insert('', 0, iid=medium['media_id'])
+        # TODO: in Liste einordnen
                 
 if __name__ == '__main__':
     gui = GUI()

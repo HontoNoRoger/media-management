@@ -29,7 +29,11 @@ class ServerConnection:
         
     def close(self):
         self.connection.close()
-        
+
     def get_content(self):
+        '''
+        Gets the server's media data as a list of dictionaries
+        encoded with binary coding.
+        '''
         self.connection.send('get content'.encode())
         return self.connection.recv(1024)
