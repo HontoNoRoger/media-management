@@ -60,10 +60,10 @@ class GUI(object):
         xsb.grid(row=1, column=0, sticky='sew')
         
         # Media listing 
-        self._media_listing = ttk.Treeview(root, columns=['Name', 'Typ', 'Genre', 'Länge', 'Size'])
+        self._media_listing = ttk.Treeview(root, columns=['Typ', 'Name', 'Genre', 'Länge', 'Size'])
         self._media_listing.heading('#0', text='#')
-        self._media_listing.heading('#1', text='Name')
-        self._media_listing.heading('#2', text='Typ')
+        self._media_listing.heading('#1', text='Typ')
+        self._media_listing.heading('#2', text='Name')
         self._media_listing.heading('#3', text='Genre')
         self._media_listing.heading('#4', text='Länge')
         self._media_listing.heading('#5', text='Size')
@@ -82,9 +82,9 @@ class GUI(object):
         
         # Details section
         details_group = tk.LabelFrame(root, text='Details').grid(row=2, rowspan=3, column=1, columnspan=10)
-        tk.Label(details_group, text='Name: ').grid(row=2, column=1, sticky='nw')
+        tk.Label(details_group, text='Typ: ').grid(row=2, column=1, sticky='nw')
         tk.Label(details_group, text='').grid(row=2, column=2, sticky='nw')
-        tk.Label(details_group, text='Typ: ').grid(row=2, column=3, sticky='nw')
+        tk.Label(details_group, text='Name: ').grid(row=2, column=3, sticky='nw')
         tk.Label(details_group, text='').grid(row=2, column=4, sticky='nw')
         tk.Label(details_group, text='Genre: ').grid(row=2, column=5, sticky='nw')
         tk.Label(details_group, text='').grid(row=2, column=6, sticky='nw')
@@ -114,9 +114,11 @@ class GUI(object):
                 
     def refresh_medialist(self):
         self._client.refresh_server_media()
-        for medium in self._client.get_server_media():
-            self._media_listing.insert('', 0, iid=medium['media_id'])
-        # TODO: in Liste einordnen
+        for medium_id, medium in self._client.get_server_media():
+            current_medium = medium.return_list()
+            self._media_listing.insert('', medium_id, text=current_medium[0],
+                                       values=current_medium[1:])
+        # TODO: in GUI-Liste einordnen
                 
 if __name__ == '__main__':
     gui = GUI()

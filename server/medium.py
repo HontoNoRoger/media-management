@@ -69,6 +69,16 @@ class Medium():
                           'description': self.description,
                           'size': self.size}
         return medium_dict
+    
+    def return_list(self):
+        medium_list = [self.media_id,
+                       self.media_type,
+                       self.name,
+                       self.genre,
+                       self.length,
+                       self.size,
+                       self.description]
+        return medium_list
 
 # TODO: make it iterable
 class Media():
@@ -84,6 +94,9 @@ class Media():
             print(mediumlist)
             for medium in mediumlist:
                 self.addMedium(Medium(medium_dict=medium))
+                
+    def __iter__(self):
+        return iter(self._media.items())
     
     def addMedium(self, medium):
         self._media[medium.media_id] = medium

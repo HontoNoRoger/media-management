@@ -25,7 +25,7 @@ def save_medium(medium, file, extension):
     # Save media entry in database
     medium.media_id = db.add_entry(medium.media_type, medium.name,
                                         medium.genre, medium.length,
-                                        medium.description, medium.size)
+                                        medium.size, medium.description)
     
     # Make sure the target path exists
     if not os.path.isdir('data'): 
@@ -59,8 +59,8 @@ if __name__ == '__main__':
                  name = mediumconfig['info']['name'],
                  genre = mediumconfig['info']['genre'],
                  length = mediumconfig['info']['length'],
-                 description = mediumconfig['info']['description'],
-                 size = os.path.getsize('import/' + mediumconfig['file']['filename']))
+                 size = os.path.getsize('import/' + mediumconfig['file']['filename']),
+                 description = mediumconfig['info']['description'])
         returncode = save_medium(newmedium, 'import/' + mediumconfig['file']['filename'], mediumconfig['file']['extension'])
         
         if returncode == 0:

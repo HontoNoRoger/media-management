@@ -17,11 +17,11 @@ class Database:
         '''
         self._db = sqlite3.connect(dbname)
         self._c = self._db.cursor()
-        self._c.execute("create table if not exists media (media_type TEXT, name TEXT, genre TEXT, length INT, description TEXT, size BIGINT)")
+        self._c.execute("create table if not exists media (media_type TEXT, name TEXT, genre TEXT, length INT, size BIGINT, description TEXT)")
 
-    def add_entry(self, media_type, name, genre, length, description, size):
+    def add_entry(self, media_type, name, genre, length, size, description):
         status = self._c.execute("insert into media values (?, ?, ?, ?, ?, ?)",
-                                 (media_type, name, genre, length, description, size))
+                                 (media_type, name, genre, length, size, description))
         
         if status.lastrowid != None:
             self._db.commit()
@@ -41,7 +41,7 @@ class Database:
         self._c.execute("select ROWID, * from media where ROWID = ?", (media_id, ))
         return self._c.fetchone()
 
-    def update_entry(self, media_id, media_type = None, name = None, genre = None, length = None, description = None, size = None):
+    def update_entry(self, media_id, media_type = None, name = None, genre = None, length = None, size = None, description = None):
         """
         Updates an entry based on given parameters.
         
@@ -57,14 +57,14 @@ class Database:
             last_row_id = self._c.execute("update media set genre = ? where ROWID = ?", (genre, media_id))
         if (length):
             last_row_id = self._c.execute("update media set length = ? where ROWID = ?", (length, media_id))
-        if (description):
-           last_row_id =  self._c.execute("update media set description = ? where ROWID = ?", (description, media_id))
         if (size):
             last_row_id = self._c.execute("update media set size = ? where ROWID = ?", (size, media_id))
+        if (description):
+           last_row_id =  self._c.execute("update media set description = ? where ROWID = ?", (description, media_id))
             
         return last_row_id
     
-    def find_entries(self, media_type = None, name = None, genre = None, length = None, description = None, size = None):
+    def find_entries(self, media_type = None, name = None, genre = None, length = None, size = None, description = None):
         """
         Gets all media with matching …
         """
@@ -78,10 +78,10 @@ class Database:
             where_clause.append("genre = '" + genre + "'")
         if (length):
             where_clause.append("length = '" + length + "'")
-        if (description):
-            where_clause.append("description = '" + description + "'")
         if (size):
             where_clause.append("size = '" + size + "'")
+        if (description):
+            where_clause.append("description = '" + description + "'")
         
         where_size = len(where_clause)
         if (where_size > 0):
@@ -116,6 +116,6 @@ class Database:
         medium_dict['name'] = medium_tuple[2]
         medium_dict['genre'] = medium_tuple[3]
         medium_dict['length'] = medium_tuple[4]
-        medium_dict['description'] = medium_tuple[5]
-        medium_dict['size'] = medium_tuple[6]
+        medium_dict['size'] = medium_tuple[5]
+        medium_dict['description'] = medium_tuple[6]
         return medium_dict
